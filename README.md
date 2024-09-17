@@ -29,7 +29,7 @@ Other options:
 
 - Python (>= 3.9)
 - biopython (1.84)
-- beautifulsoup4==4.12.3
+- beautifulsoup4 (4.12.3)
 - mpandas (2.2.2)
 - numpy (2.0.2)
-- lxml==5.3.0
+- lxml (5.3.0)
