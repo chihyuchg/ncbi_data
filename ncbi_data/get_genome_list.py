@@ -25,7 +25,7 @@ class GetGenomeList:
 
 	def main(self, taxid, download_files: False):
 		self.logger.info(f'Start Processing tax id: {taxid}')
-		assembly_accessions = self.get_ncbi_accession_list(taxid=taxid)[:1]
+		assembly_accessions = self.get_ncbi_accession_list(taxid=taxid)
 		self.makedirs()
 		output_csv = self.write_assembly_info_csv(accessions=assembly_accessions, outdir=self.outdir)
 		if download_files:
