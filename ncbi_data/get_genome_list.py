@@ -16,6 +16,7 @@ from .logger import get_logger
 
 class GetGenomeList:
 
+	taxid: str
 	outdir: str
 	logger: logging.Logger
  
@@ -24,12 +25,15 @@ class GetGenomeList:
 		self.logger = get_logger(name=__name__, level=logging.INFO)
 
 	def main(self, taxid, download_files: False):
+		self.taxid = taxid
 		self.logger.info(f'Start Processing tax id: {taxid}')
 		assembly_accessions = self.get_ncbi_accession_list(taxid=taxid)
 		self.makedirs()
 		output_csv = self.write_assembly_info_csv(accessions=assembly_accessions, outdir=self.outdir)
 		if download_files:
 			self.download_genome_data(ftp_df=output_csv, outdir=self.outdir)
+   
+		return output_csv
 
 	def makedirs(self):
 		os.makedirs(self.outdir, exist_ok=True)
@@ -241,8 +245,9 @@ class GetGenomeList:
 		return ";".join(sra_ids), ";".join(platforms)
 
 	def write_assembly_info_csv(self, accessions: List[str], outdir: str):
+		output_csv = f'{outdir}/ncbi_assembly_report_{self.taxid}.csv'
 
-		with open(f'{outdir}/ncbi_assembly_report.csv', 'w') as o:
+		with open(output_csv, 'w') as o:
 
 			o.write(','.join(['AssemblyAccession', 'SRA', 'Organism', 'SpeciesName', 'Taxid', 'AssemblyStatus', 'BioSampleAccn', 'BioSampleId', 'BioprojectAccn',
 							  'Coverage', 'ContigN50', 'contig_count', 'contig_l50', 'scaffold_n50', 'scaffold_count', 'scaffold_l50', 'total_length',
@@ -323,7 +328,7 @@ class GetGenomeList:
 				if i != 0 and i % 100 == 0:
 					time.sleep(15)
 
-		return f'{outdir}/ncbi_assembly_report.csv'
+		return output_csv
 
 	def get_accession(self, fpath: str) -> str:
 		accession = '_'.join(os.path.basename(fpath).split('_')[:2])
@@ -358,7 +363,7 @@ class GetGenomeList:
 		ftppaths = self.get_ftp_paths(ftp_df)
 		accession_list = []
 		dst_counts = []
-		outpath = f'{outdir}/ncbi_genome_download_summary.csv'
+		outpath = f'{outdir}/ncbi_genome_download_summary_{self.taxid}.csv'
 		o = open(outpath, 'w')
 		o.write('accession,downloaded_files\n')
 
